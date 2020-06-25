@@ -360,7 +360,11 @@ template<typename T>
 //    adios2::Engine engine = handler.eng;
 //    sendIO.SetEngine("Sst");
     if(m==0){
-      sendIO.SetEngine("Sst");
+      if(fldname == "cpl_field") {
+        sendIO.SetEngine("BP4");
+      } else {
+        sendIO.SetEngine("Sst");
+      }
       sendIO.SetParameters({
       {"OpenTimeoutSecs", "480"}
           });
