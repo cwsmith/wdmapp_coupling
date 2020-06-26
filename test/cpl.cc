@@ -46,12 +46,18 @@ int main(int argc, char **argv){
     coupler::adios2_handler reader(adios,"reader");
     reader.IO.SetEngine("Sst");
     reader.eng = reader.IO.Open("foo.bp", adios2::Mode::Read);
+    std::cerr << "before close\n";
+    reader.close();
+    std::cerr << "after close\n";
     finalize();
     return 0;
   } else {
     coupler::adios2_handler writer(adios,"writer");
     writer.IO.SetEngine("Sst");
     writer.eng = writer.IO.Open("foo.bp", adios2::Mode::Write);
+    std::cerr << "before close\n";
+    writer.close();
+    std::cerr << "after close\n";
     finalize();
     return 0;
   }

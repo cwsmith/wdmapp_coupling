@@ -19,11 +19,17 @@ namespace coupler {
     std::string name;
     adios2_handler(adios2::ADIOS &adios, const std::string name_):
             name(name_),IO(adios.DeclareIO(name_))  {}
+    void close() {
+      assert(eng);
+      fprintf(stderr, "in close for %s\n", name.c_str());
+      eng.Close();
+    }
     ~adios2_handler(){
             fprintf(stderr, "in adios2_handler dtor for %s\n", name.c_str());
-            eng.Close();
+            assert(!eng);
     }
     std::string get_name() const { return name; };
+
   };
 
   /** Storage of double precision 2D array data
