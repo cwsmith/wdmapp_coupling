@@ -20,6 +20,7 @@ namespace coupler {
     adios2_handler(adios2::ADIOS &adios, const std::string name_):
             name(name_),IO(adios.DeclareIO(name_))  {}
     ~adios2_handler(){
+            fprintf(stderr, "in adios2_handler dtor for %s\n", name.c_str());
             eng.Close();
     }
     std::string get_name() const { return name; };
