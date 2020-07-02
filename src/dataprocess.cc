@@ -310,13 +310,16 @@ std::cout<<"i,j="<<i<<" "<<j<<" "<<"denspart3[i][j][k]="<<denspart3[i][j][k]<<'\
 }
 }
 */
+      fprintf(stderr, "%d %s 0.01 p1pp3d.li1 %d i %d\n", p1pp3d.mype, __func__, p1pp3d.li1, i);
       xl=p1pp3d.li1+i;    
+      fprintf(stderr, "%d %s 0.02 xl %d\n", p1pp3d.mype, __func__, xl);
       double* tmp = new double[p3m3d.versurf[xl]];
       double* tmp_one;
       tmp_one=denspart3[i][j];
       MPI_Allgatherv(tmp_one,p3m3d.mylk0[i],MPI_DOUBLE,tmp,recvcount,rdispls,
                     MPI_DOUBLE,p1pp3d.comm_z);    
  
+     fprintf(stderr, "%d %s 0.03 p3m3d.versurf[xl] %d\n", p1pp3d.mype, __func__, p3m3d.versurf[xl]);
      reshufflebackward(tmp,p3m3d.nstart[xl],p3m3d.versurf[xl]);
       GO sumbegin=0;
       for(LO h=0;h<i;h++){

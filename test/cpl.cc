@@ -73,10 +73,15 @@ int main(int argc, char **argv){
   int numsurf = xgc_numsurf->val(0);
   int block_count = xgc_numsurf->val(1);
 
+  std::cerr << "0.6"<< "\n";
   double* xgc_zcoords = coupler::receive_gene_exact<double>(dir,xZcoord, 0, block_count);
+  std::cerr << "0.7"<< "\n";
   int* xgc_versurf = coupler::receive_gene_exact<int>(dir,xVsurf, p1pp3d.li1, p1pp3d.nx0);
+  std::cerr << "0.71"<< "\n";
   coupler::Array1d<int>* xgc_cce = coupler::receive_gene_pproc<int>(dir, xCce);
+  std::cerr << "0.72"<< "\n";
   coupler::Part3Mesh3D p3m3d(p1pp3d, numsurf, block_count, xgc_versurf, xgc_cce->data(), xgc_xcoords->data(), xgc_zcoords, preproc);
+  std::cerr << "0.73"<< "\n";
 
   const int nummode = 1;
   coupler::DatasProc3D dp3d(p1pp3d, p3m3d, preproc, test_case, ypar, nummode);
@@ -94,17 +99,21 @@ std::cout<<"nzb="<<bdesc.nzb<<'\n';
   int m;
   for (int i = 0; i < time_step; i++) {
     for (int j = 0; j < RK_count; j++) {
+      std::cerr << p1pp3d.mype << " begin loop " << i << " " << j << "\n";
       coupler::GO start[2]={0, p1pp3d.blockstart};
       coupler::GO count[2]={coupler::GO(p1pp3d.lj0), p1pp3d.blockcount};
 std::cout<<"start count"<<start[0]<<" "<<start[1]<<" "<<count[0]<<" "<<count[1]<<'\n';
       m=i*RK_count+j;
+      MPI_Barrier(MPI_COMM_WORLD);
+      std::cerr << p1pp3d.mype << " " << __func__ << " 0.1\n";
       coupler::Array2d<coupler::CV>* densityfromGENE = coupler::receive_density(dir, gDens,start,count,MPI_COMM_WORLD,m);
 /*
 for(coupler::LO i=0;i<count[0]*count[1];i++){
 std::cout<<"i="<<i<<" "<<densityfromGENE->val(i)<<'\n';
  }
 */
-
+      std::cerr << p1pp3d.mype << " " << __func__ << " 0.2\n";
+      MPI_Barrier(MPI_COMM_WORLD);
       dp3d.DistriDensiRecvfromPart1(p3m3d,p1pp3d,densityfromGENE);
 //      coupler::destroy(densityfromGENE);
  
@@ -119,6 +128,8 @@ for(int i=0;i<p1pp3d.li0;i++){
 }
 */
 
+      std::cerr << p1pp3d.mype << " " << __func__ << " 0.3\n";
+      MPI_Barrier(MPI_COMM_WORLD);
       bdesc.zDensityBoundaryBufAssign(dp3d.densin,p1pp3d);
 /*
 if(p1pp3d.mype==0){
@@ -131,8 +142,15 @@ for(int i=0;i<p1pp3d.li0;i++){
 }
 */
 
+      std::cerr << p1pp3d.mype << " " << __func__ << " 0.4\n";
+      MPI_Barrier(MPI_COMM_WORLD);
       dp3d.InterpoDensity3D(bdesc,p3m3d,p1pp3d);
+      std::cerr << p1pp3d.mype << " " << __func__ << " 0.5\n";
+      MPI_Barrier(MPI_COMM_WORLD);
       dp3d.CmplxdataToRealdata3D();
+      std::cerr << p1pp3d.mype << " " << __func__ << " 0.6\n";
+      MPI_Barrier(MPI_COMM_WORLD);
+      std::cerr << p1pp3d.mype << " " << __func__ << " 0.7\n";
       dp3d.AssemDensiSendtoPart3(p3m3d,p1pp3d);
       coupler::Array2d<double>* densitytoXGC = new coupler::Array2d<double>(
                                                     p3m3d.activenodes,p3m3d.lj0,p3m3d.blockcount,p3m3d.lj0, 

@@ -147,7 +147,11 @@ void reshuffleforward(T* array,const LO nstart,const LO vertnum)
 template<class T>
 void reshufflebackward(T* array,const LO nstart,const LO vertnum)
 {
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  fprintf(stderr, "%d %s 0.01 vertnum %d\n", rank, __func__, vertnum);
   T* tmp=new T[vertnum];
+  fprintf(stderr, "%d %s 0.02\n", rank, __func__);
   for(LO i=vertnum-nstart;i<vertnum;i++)
     tmp[i-vertnum+nstart]=array[i];
   for(LO j=0;j<vertnum-nstart;j++)
